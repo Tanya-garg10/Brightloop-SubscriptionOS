@@ -1,0 +1,24 @@
+.venv/
+__pycache__/
+*.pyc
+brightloop.db
+.env
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Python environment and cache
+.venv/
+__pycache__/
+*.pyc
+
+# Database and backups
+*.db
+*.db-*
+*.backup
+supabase_pre_sync_backup.json
+
+# System files
+.DS_Store

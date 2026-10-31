@@ -1,0 +1,45 @@
+﻿BRIGHTLOOP SUBSCRIPTION MANAGEMENT SYSTEM
+==========================================
+
+REQUIREMENTS
+- Python 3.10 or newer
+- A PostgreSQL database (your own Supabase project is also supported)
+- Internet connection for database access
+
+SETUP INSTRUCTIONS
+1. Extract the complete ZIP folder.
+2. Open the extracted outer folder.
+3. Copy .env.example and rename the copy to .env.
+4. Open .env and enter your OWN PostgreSQL connection URL and a strong secret key.
+5. Open PowerShell inside the brightloop_subscription_system folder.
+6. Run these commands:
+
+   py -m venv .venv
+   .\.venv\Scripts\Activate.ps1
+   pip install -r requirements.txt
+   py app.py
+
+7. Open http://127.0.0.1:5000 in your browser.
+
+IMPORTANT DATABASE NOTES
+- The application creates missing database tables on startup.
+- Demo data is inserted only if the database has no users.
+- Use your own database. Do not use the original developer's database credentials.
+- Keep your .env file private. Never upload or share it.
+
+DEMO LOGIN ACCOUNTS
+Admin:
+admin@brightloop.demo
+Brightloop@2026
+
+Staff:
+staff@brightloop.demo
+Staff@Brightloop26
+
+Customer:
+customer@brightloop.demo
+Customer@2026
+
+These are demonstration credentials. Change or remove them before any production deployment.
+
+For features and additional details, see README.md.
