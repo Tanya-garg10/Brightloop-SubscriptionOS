@@ -24,13 +24,16 @@ if not SECRET_KEY:
 
 app = Flask(__name__)
 
+# Configure SQLAlchemy engine options based on database type
+engine_options = {}
+if 'postgresql' in DATABASE_URL:
+    engine_options = {'connect_args': {'sslmode': 'require'}}
+
 app.config.update(
     SECRET_KEY=SECRET_KEY,
     SQLALCHEMY_DATABASE_URI=DATABASE_URL,
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
-    SQLALCHEMY_ENGINE_OPTIONS={
-        'connect_args': {'sslmode': 'require'}
-    },
+    SQLALCHEMY_ENGINE_OPTIONS=engine_options,
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax'
 )
@@ -117,7 +120,7 @@ def register():
     d=payload(); email=d.get('email','').strip().lower(); pw=d.get('password','')
     if not email or not d.get('name') or len(pw)<=8 or not any(c.isupper() for c in pw) or not any(c.islower() for c in pw) or not any(not c.isalnum() for c in pw): return jsonify(error='Use a password longer than 8 characters with uppercase, lowercase and a special character.'),400
     if User.query.filter_by(email=email).first(): return jsonify(error='This email already has an account.'),409
-    u=User(name=d['name'],email=email,password=generate_password_hash(pw),role='customer'); db.session.add(u); db.session.flush(); db.session.add(Customer(name=u.name,email=email,company=d.get('company',''),user_id=u.id)); db.session.commit(); session['uid']=u.id; return jsonify(user=safe_user(u))
+    u=User(name=d['name'],email=email,password=generate_password_hash(pw),role='customer'); db.session.add(u); db.session.flush(); db.session.add(Customer(name=u.name,email=email,company=d.get('company',''),user_id=u.id)); db.session.commit(); session['uid']=u.id; return jsonify(user=safe_user(u)),201
 @app.post('/api/login')
 def login():
     d=payload(); u=User.query.filter_by(email=d.get('email','').lower()).first()
@@ -138,6 +141,11 @@ def reset_page(token):
     t=ResetToken.query.filter_by(token=token).first()
     if not t or t.expires<datetime.utcnow(): return 'This password reset link is invalid or expired.',400
     return render_template('reset.html',token=token)
+
+@app.get('/help')
+@role_required('admin','staff','customer')
+def help_page():
+    return render_template('help.html')
 
 @app.post('/api/reset/<token>')
 def reset(token):
